@@ -1,0 +1,48 @@
+version: '3.1'
+
+services:
+
+  postgres:
+    image: postgres
+    restart: always    
+    environment:
+      POSTGRES_PASSWORD: Geslo.DataScience.2023
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts:/docker-entrypoint-initdb.d
+    networks:
+      - ids-network
+
+  python:
+    image: python
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      - JUPYTER_DIR=/data
+      - JUPYTER_PASSWORD=Geslo.01
+    volumes:
+      - ./data:/data
+    ports:
+      - 8787:8888
+    networks:
+      - ids-network
+
+  pgadmin:
+    image: dpage/pgadmin4:7
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: Geslo.01
+      PGADMIN_LISTEN_PORT: 8080
+    networks:
+      - ids-network
+    ports:
+      - 8080:8080
+
+volumes:
+  postgres-data:
+
+networks:
+  ids-network:
+    driver: bridge
